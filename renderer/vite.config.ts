@@ -1,13 +1,13 @@
-import { chrome } from "../.electron-vendors.cache.json";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import { join } from "path";
-import { builtinModules } from "module";
+import { chrome } from '../.electron-vendors.cache.json';
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import { join, resolve } from 'path';
+import { builtinModules } from 'module';
 
 const PACKAGE_ROOT = __dirname;
 
 // why is this needed? Isn't `chrome` typed as "string" already?
-if (typeof chrome !== "string") {
+if (typeof chrome !== 'string') {
   throw new Error(`The imported vendor version was not a string`);
 }
 
@@ -22,31 +22,31 @@ export default defineConfig({
   envDir: process.cwd(),
   resolve: {
     alias: {
-      "/@/": join(PACKAGE_ROOT, "src") + "/",
-    },
+      '@': resolve(__dirname, './src')
+    }
   },
-  base: "./",
+  base: './',
   server: {
     fs: {
-      strict: true,
-    },
+      strict: true
+    }
   },
   build: {
     target: `chrome${chrome}`,
-    sourcemap: "inline",
-    outDir: "dist",
+    sourcemap: 'inline',
+    outDir: 'dist',
     emptyOutDir: true,
-    assetsDir: ".",
+    assetsDir: '.',
     // set to development in the watch script
-    minify: process.env.MODE !== "development",
+    minify: process.env.MODE !== 'development',
     rollupOptions: {
-      input: join(PACKAGE_ROOT, "index.html"),
+      input: join(PACKAGE_ROOT, 'index.html'),
       external: [
         // Exclude Node builtin modules.
-        ...builtinModules.flatMap((p) => [p, `node:${p}`]),
-      ],
+        ...builtinModules.flatMap((p) => [p, `node:${p}`])
+      ]
     },
-    reportCompressedSize: false,
+    reportCompressedSize: false
   },
-  plugins: [react()],
+  plugins: [react()]
 });

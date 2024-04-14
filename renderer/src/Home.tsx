@@ -1,49 +1,35 @@
-import "./App.css";
-import { trpc } from "./utils/trpc";
-import reactLogo from "./assets/react.svg";
+import { Link, RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { Navigation } from './components/common/navigation';
+import { Routes } from './routes';
+import { TeamsPage } from './components/teams/teams';
+
+const router = createBrowserRouter([
+  {
+    path: Routes.Home,
+    element: (
+      <div>
+        <h1>Hello World</h1>
+        <Link to={Routes.Teams}>Teams</Link>
+      </div>
+    )
+  },
+  {
+    path: Routes.Teams,
+    element: <TeamsPage />
+  }
+]);
 
 function Home() {
-  const examples = trpc.example.getAll.useQuery();
-  const utils = trpc.useContext();
-  const addExample = trpc.example.add.useMutation({
-    async onSuccess() {
-      await utils.example.getAll.invalidate();
-    },
-  });
-  const removeExample = trpc.example.remove.useMutation({
-    async onSuccess() {
-      await utils.example.getAll.invalidate();
-    },
-  });
-  const greeting = trpc.greeting.useQuery({ name: "Nicky" });
-
   return (
-    <div className="App">
-      <div>
-        <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-          <img src="vite.svg" className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://reactjs.org" target="_blank" rel="noreferrer">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <p>{greeting.data}</p>
-      <button onClick={() => addExample.mutate()}>ADD example</button>
-      <ul>
-        {examples.data?.map((example, idx) => {
-          return (
-            <li
-              key={idx}
-              className="example"
-              onClick={() => {
-                removeExample.mutate({ id: example.id });
-              }}
-            >
-              <span>{example.id}</span>
-            </li>
-          );
-        })}
-      </ul>
+    <div className="flex min-h-screen w-full flex-col">
+      <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
+        <Navigation />
+      </header>
+      <main className="flex flex-1 flex-col gap-4 p-4 md:gap-8 md:p-8 relative">
+        <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
+          <RouterProvider router={router} />
+        </div>
+      </main>
     </div>
   );
 }
