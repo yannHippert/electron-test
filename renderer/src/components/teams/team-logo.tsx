@@ -5,7 +5,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
 
 type Props = {
-  logo: string | undefined;
+  logo: string | undefined | null;
 } & HtmlHTMLAttributes<HTMLDivElement>;
 
 export function TeamLogo({ logo, className }: Props) {

@@ -2,6 +2,9 @@ import { Link, RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { Navigation } from './components/common/navigation';
 import { Routes } from './routes';
 import { TeamsPage } from './components/teams/teams';
+import { Toaster } from './components/ui/sonner';
+import { TeamPage } from './components/teams/team';
+import { GamesPage } from './components/games/games';
 
 const router = createBrowserRouter([
   {
@@ -16,6 +19,14 @@ const router = createBrowserRouter([
   {
     path: Routes.Teams,
     element: <TeamsPage />
+  },
+  {
+    path: Routes.Team,
+    element: <TeamPage />
+  },
+  {
+    path: Routes.Games,
+    element: <GamesPage />
   }
 ]);
 
@@ -30,6 +41,7 @@ function Home() {
           <RouterProvider router={router} />
         </div>
       </main>
+      <Toaster />
     </div>
   );
 }

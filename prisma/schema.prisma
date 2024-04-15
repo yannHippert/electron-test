@@ -10,6 +10,44 @@ datasource db {
   url      = "file:./../buildResources/db.sqlite"
 }
 
-model Example {
-  id String @id @default(uuid())
+model Team {
+  id        Int      @id @default(autoincrement())
+  name      String
+  shortName String
+  alias     String
+  logo      String?
+  createdOn DateTime @default(now())
+
+  homeGames Game[] @relation("HomeTeam")
+  awayGames Game[] @relation("AwayTeam")
+}
+
+model Game {
+  id         Int      @id @default(autoincrement())
+  date       String?
+  time       String?
+  homeTeamId Int
+  awayTeamId Int
+  createdOn  DateTime @default(now())
+
+  homeTeam Team @relation(name: "HomeTeam", fields: [homeTeamId], references: [id])
+  awayTeam Team @relation(name: "AwayTeam", fields: [awayTeamId], references: [id])
+}
+
+model Player {
+  id        Int      @id @default(autoincrement())
+  name      String?
+  number    Int?
+  position  String?
+  alias     String?
+  createdOn DateTime @default(now())
+}
+
+model GameAction {
+  id        Int      @id @default(autoincrement())
+  game      String?
+  number    Int?
+  position  String?
+  alias     String?
+  createdOn DateTime @default(now())
 }

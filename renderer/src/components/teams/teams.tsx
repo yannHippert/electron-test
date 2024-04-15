@@ -7,9 +7,11 @@ import { TeamLogo } from './team-logo';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
+import { trpc } from '@/utils/trpc';
 
 export function TeamsPage() {
   const navigate = useNavigate();
+  const teams = trpc.teams.getAll.useQuery();
 
   return (
     <Card className="col-span-full">
@@ -37,7 +39,7 @@ export function TeamsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {/* {teamsState.teams.map((team) => (
+            {teams.data?.map((team) => (
               <TableRow key={team.id} onClick={() => navigate(`/teams/${team.id}`)} className="cursor-pointer">
                 <TableCell>
                   <TeamLogo logo={team.logo} className="w-12 h-12" />
@@ -48,17 +50,7 @@ export function TeamsPage() {
                   <TeamTableDropdown teamId={team.id} />
                 </TableCell>
               </TableRow>
-            ))} */}
-            <TableRow onClick={() => navigate(`/teams/1`)} className="cursor-pointer">
-              <TableCell>
-                <TeamLogo logo="" className="w-12 h-12" />
-              </TableCell>
-              <TableCell>HBE</TableCell>
-              <TableCell>Handball Esch</TableCell>
-              <TableCell className="flex flex-row justify-end" onClick={(e) => e.stopPropagation()}>
-                <TeamTableDropdown teamId={1} />
-              </TableCell>
-            </TableRow>
+            ))}
           </TableBody>
         </Table>
       </CardContent>

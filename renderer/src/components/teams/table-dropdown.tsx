@@ -1,4 +1,4 @@
-import { Pencil, Trash, Users } from 'lucide-react';
+import { CheckCircle, Pencil, Trash, Users } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 
@@ -12,19 +12,24 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu';
 import { Link } from 'react-router-dom';
+import { trpc } from '@/utils/trpc';
+import { toast } from 'sonner';
 
 type Props = {
   teamId: number;
 };
 
 export function TeamTableDropdown({ teamId }: Props) {
+  const utils = trpc.useContext();
+  const deleteMutation = trpc.teams.delete.useMutation({
+    async onSuccess(data) {
+      toast(`Team ${data.name} deleted`, { duration: 2000, icon: <CheckCircle /> });
+      await utils.teams.getAll.invalidate();
+    }
+  });
+
   const deleteTeam = () => {
-    // if (window.Main) {
-    //   window.Main.deleteTeam({ teamId });
-    //   window.Main.when.deleteTeam((data) => {
-    //     teams.invalidate();
-    //   });
-    // }
+    deleteMutation.mutate({ id: teamId });
   };
 
   return (

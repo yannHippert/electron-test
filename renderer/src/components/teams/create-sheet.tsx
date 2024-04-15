@@ -15,27 +15,26 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
+import { trpc } from '@/utils/trpc';
 
 export function CreateTeamSheet({ children }: { children: React.ReactNode }) {
   const [name, setName] = React.useState('');
   const [shortName, setShortName] = React.useState('');
+  const utils = trpc.useContext();
+  const addTeam = trpc.teams.add.useMutation({
+    async onSuccess(data) {
+      toast(`Team ${data.name} created`, { duration: 2000, icon: <CheckCircle /> });
+      await utils.teams.getAll.invalidate();
+    },
+    onError(error) {
+      toast('TRPC error', {
+        description: error.message
+      });
+    }
+  });
 
   const createTeam = () => {
-    // if (window.Main) {
-    //   window.Main.createTeam({ name, shortName });
-    //   window.Main.when.createTeam(({ data: team, error }) => {
-    //     if (error) {
-    //       toast(String(error), { duration: 2000 });
-    //       return;
-    //     }
-    //     teamState.invalidate();
-    //     toast(`Team ${team.name} created`, { duration: 1000, icon: <CheckCircle /> });
-    //   });
-    // } else {
-    //   toast('Electron error', {
-    //     description: 'You are in a Browser, so no Electron functions are available'
-    //   });
-    // }
+    addTeam.mutate({ name, shortName });
   };
 
   return (

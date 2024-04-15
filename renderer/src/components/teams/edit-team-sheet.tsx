@@ -14,41 +14,28 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@/components/ui/sheet';
-import { useTeam } from '@/hooks/useTeam';
+import { trpc } from '@/utils/trpc';
+import { Avatar, AvatarFallback } from '../ui/avatar';
+import { AvatarImage } from '@radix-ui/react-avatar';
 
 type Props = {
   teamId: string;
 } & React.HTMLAttributes<HTMLDivElement>;
 
 export function EditTeamSheet({ teamId, children }: Props) {
-  const { team } = useTeam({ teamId });
-  const [name, setName] = React.useState('');
-  const [shortName, setShortName] = React.useState('');
-  const [logo, setLogo] = React.useState<string | null>(null);
+  const { data: team } = trpc.teams.get.useQuery({ teamId: Number(teamId) });
+
+  if (!team) {
+    toast('Error', {
+      description: 'No team found'
+    });
+    return null;
+  }
+
+  const [name, setName] = React.useState(team.name);
+  const [shortName, setShortName] = React.useState(team.shortName);
+  const [logo, setLogo] = React.useState<string | undefined>(team.logo ?? undefined);
   const [filePath, setFilePath] = React.useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    if (team) {
-      setName(team.name);
-      setShortName(team.shortName);
-      setLogo(team.logo);
-    }
-  }, [team]);
-
-  const updateTeam = () => {
-    if (window.Main && team) {
-      window.Main.updateTeam({ teamId: team.id, name, shortName, logo: filePath });
-      // window.Main.on('updateTeam', () => {
-      //   toast('Team created', {
-      //     description: JSON.stringify(team, null, 2)
-      //   });
-      // });
-    } else {
-      toast('Electron error', {
-        description: 'You are in a Browser, so no Electron functions are available'
-      });
-    }
-  };
 
   return (
     <Sheet>
@@ -80,7 +67,10 @@ export function EditTeamSheet({ teamId, children }: Props) {
             <Label htmlFor="logo" className="text-right">
               Logo
             </Label>
-            <img src={`app:///${logo}`} alt="Team logo" />
+            <Avatar>
+              <AvatarImage src={logo} alt="Team logo" />
+              <AvatarFallback className="font-bold">{team.shortName}</AvatarFallback>
+            </Avatar>
             <Input
               id="logo"
               type="file"
@@ -96,7 +86,7 @@ export function EditTeamSheet({ teamId, children }: Props) {
           </div>
         </div>
         <SheetFooter>
-          <SheetClose asChild onClick={updateTeam}>
+          <SheetClose asChild onClick={console.log}>
             <Button>Update team</Button>
           </SheetClose>
         </SheetFooter>
